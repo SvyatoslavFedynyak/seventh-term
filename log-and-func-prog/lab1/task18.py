@@ -56,7 +56,6 @@ def symb_check(passwords, symbols=""):
 
 def main():
     passwords = read_data()
-    #valid password example: ABcd12@dnj, not valid - abc1
     inner_symbol_check = special_symbol_check(symb_check, '$#@')
     res = check(passwords, lowercase_check, uppercase_check, digits_check, length_check, inner_symbol_check)
     print(res)
