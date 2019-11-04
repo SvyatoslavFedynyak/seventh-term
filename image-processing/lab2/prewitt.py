@@ -10,15 +10,13 @@ gray_img = np.round(0.299 * img[:, :, 0] +
                     0.587 * img[:, :, 1] +
                     0.114 * img[:, :, 2]).astype(np.uint8)
 
-# Sobel Operator
+# Prewitt Operator
 h, w = gray_img.shape
 # define filters
-horizontal = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])  # s2
-vertical = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])  # s1
+horizontal = np.array([[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]])  # s2
+vertical = np.array([[-1, -1, -1], [0, 0, 0], [1, 1, 1]])  # s1
 
 # define images with 0s
-newhorizontalImage = np.zeros((h, w))
-newverticalImage = np.zeros((h, w))
 newgradientImage = np.zeros((h, w))
 
 # offset by 1
@@ -34,8 +32,6 @@ for i in range(1, h - 1):
                          (horizontal[2, 1] * gray_img[i + 1, j]) + \
                          (horizontal[2, 2] * gray_img[i + 1, j + 1])
 
-        newhorizontalImage[i - 1, j - 1] = abs(horizontalGrad)
-
         verticalGrad = (vertical[0, 0] * gray_img[i - 1, j - 1]) + \
                        (vertical[0, 1] * gray_img[i - 1, j]) + \
                        (vertical[0, 2] * gray_img[i - 1, j + 1]) + \
@@ -46,14 +42,11 @@ for i in range(1, h - 1):
                        (vertical[2, 1] * gray_img[i + 1, j]) + \
                        (vertical[2, 2] * gray_img[i + 1, j + 1])
 
-        newverticalImage[i - 1, j - 1] = abs(verticalGrad)
-
         # Edge Magnitude
         mag = np.sqrt(pow(horizontalGrad, 2.0) + pow(verticalGrad, 2.0))
         newgradientImage[i - 1, j - 1] = mag
 
+
 plt.figure()
-plt.title('data/parrots-sobel.png')
-plt.imsave('data/parrots-sobel.png', newgradientImage, cmap='gray', format='png')
-plt.imshow(newgradientImage, cmap='gray')
-plt.show()
+plt.title('data/parrots-prewitt.png')
+plt.imsave('data/parrots-prewitt.png', newgradientImage, cmap='gray', format='png')
