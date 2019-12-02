@@ -1,21 +1,22 @@
 import os, sys
 import subprocess
 
-range_start = 1
-range_end = 3
-
-childs = []
-for child in range(range_start, range_end+1):
-    childs.append('./child{0}.py'.format(child))
-
+child = './child.py'
 pipes = []
-word  = 'connect'
 
-for i in range(range_start, range_end+1):
-  command = [sys.executable, childs[i]]
+command = [sys.executable, child, 'date', '5']
+pipe = subprocess.Popen(command, stdout=subprocess.PIPE)
+pipes.append(pipe)
+command = [sys.executable, child, 'random', '1', '1', '100']
+pipe = subprocess.Popen(command, stdout=subprocess.PIPE)
+pipes.append(pipe)
+
+buffer = 'temp'
+
+while buffer:
+    for pipe in pipes:
+        buffer = pipe.stdout.readline()
+        print(buffer.decode('utf8'), end='')
   
- 
-while pipes:
-    pipe = pipes.pop()
-    pipe.wait()
+
 
