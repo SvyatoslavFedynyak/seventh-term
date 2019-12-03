@@ -4,20 +4,11 @@ import subprocess
 import threading
 
 child = './child.py'
-pipes = []
-
-command = [sys.executable, child, 'date', '5']
-pipe = subprocess.Popen(command, stdout=subprocess.PIPE)
-pipes.append(pipe)
-command = [sys.executable, child, 'random', '1', '1', '100']
-pipe = subprocess.Popen(command, stdout=subprocess.PIPE)
-pipes.append(pipe)
-
 
 def create_and_poll(process, *args):    
-    command = [sys.executable, child, process].extend(args)
-    pipe = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-    pipes.append(pipe)
+    command = [sys.executable, child, process]
+    command.extend(args)
+    pipe = subprocess.Popen(command, stdout=subprocess.PIPE)
     
     buffer = 'temp'
 
@@ -27,10 +18,10 @@ def create_and_poll(process, *args):
         
 threads = []
 
-for pipe in pipes:
-    work_thread = threading.Thread(target=create_and_poll, args=(pipe))
-    threads.append(work_thread)
-    work_thread.daemon = True
+work_thread = threading.Thread(target=create_and_poll, args=['date', '3'])
+threads.append(work_thread)
+work_thread = threading.Thread(target=create_and_poll, args=['random', '1', '1', '100',])
+threads.append(work_thread)
 
 for thread in threads:
     thread.start()
