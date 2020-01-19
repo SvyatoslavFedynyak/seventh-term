@@ -1,27 +1,22 @@
 #!/bin/bash
 check_digits() {
-    password=$1
-    echo "$password" | grep -q '[0-9]'
+    echo "$1" | grep -q '[0-9]'
     return $?
 }
 check_low() {
-    password=$1
-    echo "$password" | grep -q '[a-z]'
+    echo "$1" | grep -q '[a-z]'
     return $?
 }
 check_high() {
-    password=$1
-    echo "$password" | grep -q '[A-Z]'
+    echo "$1" | grep -q '[A-Z]'
     return $?
 }
 check_special() {
-    password=$1
-    echo "$password" | grep -q '[#$@]'
+    echo "$1" | grep -q '[#$@]'
     return $?
 }
 check_len() {
-    password=$1
-    len=`echo "$password" | wc -m`
+    len=`echo "$1" | wc -m`
     if [ $len -le 6 ] || [ $len -ge 12 ];then
         return 1
     fi
