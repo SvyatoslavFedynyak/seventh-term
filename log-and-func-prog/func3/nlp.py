@@ -1,13 +1,28 @@
 import telegram.ext as tg
+import apiai
+import json
 
-def startCommand(bot, update):
+def startCommand(bot, update,):
     bot.send_message(chat_id=update.message.chat_id, text='Hello bro, say smth!')
 
 def textMessage(bot, update):
-    response = 'I\'ve got your point: ' + update.message.text
-    bot.send_message(chat_id=update.message.chat_id, text=response)
+    with open('setting.non-git.json', 'r') as file:
+        load_sett = json.load(file)
+    request = apiai.ApiAI(load_sett['dialogflow-api-key']).text_request()
+    request.lang = "en"
+    request.session_id = 'nlpBro'
+    request.query = update.message.text
+    responseJson = json.loads(request.getresponse().read().decode('utf-8'))
+    response = responseJson['result']['fulfillment']['speech']
+    if response:
+        bot.send_message(chat_id=update.message.chat_id, text=response)
+    else:
+        bot.send_message(chat_id=update.message.chat_id, text='Sorry, what?')
 
-updater = tg.Updater(token="915791277:AAGgFRiZ8Oo6oli6lZfTax-3fT8dTZi4V0M")
+with open('setting.non-git.json', 'r') as file:
+    load_sett = json.load(file)
+
+updater = tg.Updater(token=load_sett['bot-api-token'])
 dispatcher = updater.dispatcher
 
 start_command_handler = tg.CommandHandler('start', startCommand)
