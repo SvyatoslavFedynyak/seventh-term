@@ -1,4 +1,6 @@
 #!/bin/bash
+set -x
+
 check_digits() {
     echo "$1" | grep -q '[0-9]'
     return $?
@@ -16,25 +18,16 @@ check_special() {
     return $?
 }
 check_len() {
-    len=`echo "$1" | wc -m`
-    if [ $len -le 6 ] || [ $len -ge 12 ];then
-        return 1
-    fi
+    [[ $1 =~ ^.{6,12}$ ]] || return 1
 }
 check() {
-    curr_string=$1
-    if [ "$curr_string" == '' ];then
+    if [ "$1" == '' ];then
         return 0
-    elif [[ "$curr_string" = ,* ]];then
-        curr_string=`echo "$curr_string" | sed 's/^,//g'`
-        check "$curr_string"
+    elif [[ "$1" = ,* ]];then
+        check "$(echo "$1" | sed 's/^,//g')"
     else
-        password=`echo "$curr_string" | cut -d, -f1`
-        check_digits "$password" && \
-        check_high "$password" && \
-        check_low "$password" && \
-        check_special "$password" && \
-        check_len "$password"
+        password="$(echo "$1" | cut -d, -f1)"
+        check_pass $password
         if [ $? -eq 0 ];then
             if [ "$res" == '' ];then
                 res="$password"
@@ -42,15 +35,20 @@ check() {
                 res="$res, $password"
             fi
         fi
-        curr_string=`echo "$curr_string" | sed "s/$password//g"`
-        check "$curr_string"
+        check "$(echo "$1" | sed "s/$password//g")"
     fi
+}
+check_pass() {
+    check_digits "$1" && \
+    check_high "$1" && \
+    check_low "$1" && \
+    check_special "$1" && \
+    check_len "$1"
 }
 
 main() {
-    passwords=`cat data/passwords.txt`
     res=''
-    check "$passwords"
+    check "$(cat data/passwords.txt)"
     echo "$res"
 }
 
